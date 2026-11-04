@@ -1,0 +1,4 @@
+
+# Secrets and local settings (never upload these)
+
+db.php

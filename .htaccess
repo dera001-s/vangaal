@@ -1,0 +1,36 @@
+# Disable folder listings
+Options -Indexes
+
+
+# Force HTTPS on the live website
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Do not redirect localhost
+    RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:[0-9]+)?$ [NC]
+
+    # Redirect HTTP to HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+
+# Add security headers
+<IfModule mod_headers.c>
+
+    # Prevent browsers from guessing file types
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Control referrer information
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Require HTTPS for one day, but only over HTTPS
+    Header always set Strict-Transport-Security "max-age=86400" "expr=%{HTTPS} == 'on'"
+
+</IfModule>
+
+
+# Block direct browser access to sensitive files
+<FilesMatch "^(db\.php|test-.*|create-admin\.php|init\.php|mailer\.php|sidebar\.php)$|\.(sql|log|env|ini)$">
+    Require all denied
+</FilesMatch>
